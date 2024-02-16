@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-solana_cdt_bridge = "GJsfMLfg1tDdjCGJuKj92THEKgJQBgBQ7iQHYj9MA5Qu"
+solana_cdt_bridge = "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
 
 [registry]
 url = "https://api.apr.dev"
