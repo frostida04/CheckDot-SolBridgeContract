@@ -309,12 +309,13 @@ mod solana_cdt_bridge {
             quantity,
         )?;
 
-        let one_dollar =
-            ctx.accounts.pool_in_token.amount * 1_000_000_000 / ctx.accounts.pool_out_token.amount;
+        let one_dollar = (ctx.accounts.pool_in_token.amount as u128) * 1_000_000_000
+            / (ctx.accounts.pool_out_token.amount as u128);
 
         let transfer_fees_in_cdt = quantity * bridge_info.fees_in_cdt_percentage / 100;
         let transfer_quantity = quantity - transfer_fees_in_cdt;
-        let transfer_sol_fees = one_dollar * 1_000_000_000 / bridge_info.fees_in_dollar * 100;
+        let transfer_sol_fees =
+            (one_dollar * 1_000_000_000 / (bridge_info.fees_in_dollar as u128) * 100) as u64;
 
         if ctx.accounts.authority.to_account_info().lamports() < transfer_sol_fees {
             return err!(BridgeError::InsufficientBalance);
@@ -413,7 +414,7 @@ mod solana_cdt_bridge {
             let account_ata = ctx.remaining_accounts.get(i * 2 + 1).unwrap().clone();
             let amount = *amounts.get(i).unwrap();
             let account_data_len = account_ata.data.borrow().len();
-            msg!("TEST: {:?} {:?}", account.key(), account_data_len);
+
             if account_data_len == 0 {
                 associated_token::create(CpiContext::new(
                     ctx.accounts.associated_token_program.to_account_info(),
@@ -452,7 +453,7 @@ mod solana_cdt_bridge {
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init, payer = authority, seeds = [b"bridge_info"], space = 10000, bump)]
+    #[account(init, payer = authority, seeds = [b"bridge_info"], space = 8 + std::mem::size_of::<BridgeInfo>(), bump)]
     pub bridge_info: Account<'info, BridgeInfo>,
     #[account(mut)]
     pub authority: Signer<'info>,
