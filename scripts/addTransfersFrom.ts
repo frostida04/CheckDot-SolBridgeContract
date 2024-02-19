@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as web3 from "@solana/web3.js";
-import splToken from "@solana/spl-token";
+import * as splToken from "@solana/spl-token";
 
 import idl from "../target/idl/solana_cdt_bridge.json";
 import PrivateKey from "./privateKey.json";
