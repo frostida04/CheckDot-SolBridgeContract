@@ -41,9 +41,8 @@ const initTransfer = async () => {
     ],
     program.programId
   )
-  const walletATA = await splToken.getAssociatedTokenAddress(
-    cdtToken,
-    wallet.publicKey
+  const walletATA = new web3.PublicKey(
+    "BqTKYphVyc4YbW5qLfpP48vJDnz1aFEhhnuh3U6UaSkh"
   )
   const dexPoolUsdcATA = new web3.PublicKey(
     "4d35yC7C8zhCDec7JbPptL9SEb4NUddKHxURgmvD8hfo"
