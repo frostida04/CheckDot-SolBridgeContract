@@ -326,7 +326,7 @@ mod solana_cdt_bridge {
                 ctx.accounts.system_program.to_account_info(),
                 system_program::Transfer {
                     from: ctx.accounts.authority.to_account_info(),
-                    to: ctx.accounts.token_vaults.to_account_info(),
+                    to: ctx.accounts.native_vaults.to_account_info(),
                 },
             ),
             transfer_sol_fees,
