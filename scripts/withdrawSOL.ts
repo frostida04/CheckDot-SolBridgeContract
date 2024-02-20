@@ -2,17 +2,17 @@ import * as anchor from "@coral-xyz/anchor";
 import * as web3 from "@solana/web3.js";
 
 import idl from "../target/idl/solana_cdt_bridge.json";
-import PrivateKey from "./privateKey.json";
+import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
 );
 
 const wallet = new anchor.Wallet(
   web3.Keypair.fromSecretKey(Uint8Array.from(PrivateKey))
 );
 
-const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
+const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"));
 const provider = new anchor.AnchorProvider(connection, wallet, {});
 const program = new anchor.Program(idl as anchor.Idl, programId, provider);
 
@@ -25,17 +25,21 @@ const withdrawSOL = async () => {
     [anchor.utils.bytes.utf8.encode("bridge_native_vaults")],
     program.programId
   );
-  const tx = await program.methods
-    .withdrawSol(new anchor.BN(1000))
-    .accounts({
-      authority: wallet.publicKey,
-      bridgeInfo,
-      nativeVaults: vaultsNative,
-      systemProgram: web3.SystemProgram.programId,
-      receiver: wallet.publicKey,
-    })
-    .signers([wallet.payer])
-    .rpc();
+  // const tx = await program.methods
+  //   .withdrawSol(new anchor.BN(1e9).div(new anchor.BN(10)))
+  //   .accounts({
+  //     authority: wallet.publicKey,
+  //     bridgeInfo,
+  //     nativeVaults: vaultsNative,
+  //     systemProgram: web3.SystemProgram.programId,
+  //     receiver: wallet.publicKey,
+  //   })
+  //   .signers([wallet.payer])
+  //   .rpc();
 
-  console.log(tx);
+  console.log(vaultsNative);
 };
+
+(async () => {
+  await withdrawSOL();
+})();

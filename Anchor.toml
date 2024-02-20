@@ -4,15 +4,16 @@
 seeds = false
 skip-lint = false
 
-[programs.localnet]
-solana_cdt_bridge = "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+[programs.mainnet]
+solana_cdt_bridge = "H2Vh11em6b2aWaVFghChdh1nC8A2zxDiZn9QPtHBir49"
 
 [registry]
-url = "https://api.apr.dev"
+url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "Localnet"
-wallet = "/home/eren/.config/solana/id.json"
+cluster = "mainnet"
+wallet = "/Users/jeremyguyet/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+initialize = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 scripts/initialize.ts"

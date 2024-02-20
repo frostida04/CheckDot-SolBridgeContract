@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import * as web3 from "@solana/web3.js";
 
 import idl from "../target/idl/solana_cdt_bridge.json";
-import PrivateKey from "./privateKey.json";
+import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
   "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"

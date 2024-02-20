@@ -27,4 +27,7 @@ export const getFeesInSOL = async () => {
   return transferSOLFees
 }
 
-getFeesInSOL()
+// (async () => {
+//   console.log((await getFeesInSOL()).toString())
+//   process.exit(0)
+// })()

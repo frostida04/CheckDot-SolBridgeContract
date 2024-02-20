@@ -6,5 +6,8 @@ target
 node_modules
 test-ledger
 .yarn
+target-old
+target-old-2
+target-oooo
 
 scripts/privateKey.json

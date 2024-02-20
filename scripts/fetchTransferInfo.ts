@@ -17,7 +17,7 @@ const TransferInfoLayout = borsh.struct([
 ])
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "H2Vh11em6b2aWaVFghChdh1nC8A2zxDiZn9QPtHBir49"
+  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
 )
 
 const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"))
@@ -32,8 +32,14 @@ export const fetchTransferInfo = async (index) => {
   )
   console.log(bridgeTransfer.toString())
   const data = await connection.getAccountInfo(bridgeTransfer)
+  if (data === null) {
+    return null;
+  }
   const decoded = TransferInfoLayout.decode(data.data)
   return decoded
 }
 
-fetchTransferInfo(0)
+(async () => {
+  console.log((await fetchTransferInfo(0)))
+  process.exit(0)
+})()

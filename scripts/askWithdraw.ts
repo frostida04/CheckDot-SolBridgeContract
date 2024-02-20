@@ -2,17 +2,17 @@ import * as anchor from "@coral-xyz/anchor";
 import * as web3 from "@solana/web3.js";
 
 import idl from "../target/idl/solana_cdt_bridge.json";
-import PrivateKey from "./privateKey.json";
+import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+  "H2Vh11em6b2aWaVFghChdh1nC8A2zxDiZn9QPtHBir49"
 );
 
 const wallet = new anchor.Wallet(
   web3.Keypair.fromSecretKey(Uint8Array.from(PrivateKey))
 );
 
-const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
+const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"));
 const provider = new anchor.AnchorProvider(connection, wallet, {});
 const program = new anchor.Program(idl as anchor.Idl, programId, provider);
 
@@ -29,3 +29,7 @@ const askWithdraw = async () => {
 
   console.log(tx);
 };
+
+(async () => {
+  await askWithdraw();
+})();

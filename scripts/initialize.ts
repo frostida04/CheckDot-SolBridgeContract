@@ -3,19 +3,19 @@ import * as web3 from "@solana/web3.js";
 import * as splToken from "@solana/spl-token";
 
 import idl from "../target/idl/solana_cdt_bridge.json";
-import PrivateKey from "./privateKey.json";
+import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
 );
 const dexPool = new web3.PublicKey( // USDC / WSOL pair address
-  "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+  "2QdhepnKRTLjjSqPL1PtKNwqrUkoLee5Gqs8bvZhRdMv"
 );
 const cdtToken = new web3.PublicKey( // CDT token mint address
-  "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+  "Ak3ovnWQnAxPSFoSNCoNYJLnJtQDCKRBH4HwhWkb6hFm"
 );
 const usdcToken = new web3.PublicKey( // USDC token mint address
-  "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 );
 const wsolToken = new web3.PublicKey( // WSOL mint address
   "So11111111111111111111111111111111111111112"
@@ -25,7 +25,7 @@ const wallet = new anchor.Wallet(
   web3.Keypair.fromSecretKey(Uint8Array.from(PrivateKey))
 );
 
-const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
+const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"));
 const provider = new anchor.AnchorProvider(connection, wallet, {});
 const program = new anchor.Program(idl as anchor.Idl, programId, provider);
 
@@ -46,7 +46,7 @@ const initialize = async () => {
     program.programId
   );
   const tx = await program.methods
-    .initialize("test", new anchor.BN(1_000_000_000_000), new anchor.BN(1))
+    .initialize("SOL", new anchor.BN(10_000_000_000), new anchor.BN(0))
     .accounts({
       bridgeInfo,
       authority: wallet.publicKey,
@@ -64,3 +64,7 @@ const initialize = async () => {
 
   console.log(tx);
 };
+
+(async () => {
+  await initialize();
+})()

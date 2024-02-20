@@ -2,10 +2,10 @@ import * as anchor from "@coral-xyz/anchor"
 import * as web3 from "@solana/web3.js"
 
 import idl from "../target/idl/solana_cdt_bridge.json"
-import PrivateKey from "./privateKey.json"
+import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "H2Vh11em6b2aWaVFghChdh1nC8A2zxDiZn9QPtHBir49"
+  "HoddZCKmLKWcs91npavV5uwQb829rHGVRKdToYqu96W7"
 )
 const dexPool = new web3.PublicKey('2QdhepnKRTLjjSqPL1PtKNwqrUkoLee5Gqs8bvZhRdMv')
 const mintIn = new web3.PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v')
@@ -39,3 +39,7 @@ const setDex = async () => {
 
   console.log(tx)
 }
+
+(async () => {
+  await setDex()
+})();

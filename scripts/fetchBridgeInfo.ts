@@ -22,10 +22,10 @@ const BridgeInfoLayout = borsh.struct([
 ])
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "H2Vh11em6b2aWaVFghChdh1nC8A2zxDiZn9QPtHBir49"
+  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
 )
 
-const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"))
+const connection = new web3.Connection('https://solana-mainnet.core.chainstack.com/90b1a03e7d63d7dafdefe698039b7056')
 
 export const fetchBridgeInfo = async () => {
   const [bridgeInfo] = await web3.PublicKey.findProgramAddressSync(
@@ -37,4 +37,7 @@ export const fetchBridgeInfo = async () => {
   return decoded
 }
 
-fetchBridgeInfo()
+(async () => {
+  console.log((await fetchBridgeInfo()))
+  process.exit(0)
+})()
