@@ -349,7 +349,7 @@ mod solana_cdt_bridge {
             &ctx.program_id.key(),
         );
 
-        let space = 8 + std::mem::size_of::<TransferInfo>();
+        let space = 1000;
 
         create_account(
             CpiContext::new_with_signer(
@@ -453,7 +453,7 @@ mod solana_cdt_bridge {
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init, payer = authority, seeds = [b"bridge_info"], space = 8 + std::mem::size_of::<BridgeInfo>(), bump)]
+    #[account(init, payer = authority, seeds = [b"bridge_info"], space = 10000, bump)]
     pub bridge_info: Account<'info, BridgeInfo>,
     #[account(mut)]
     pub authority: Signer<'info>,
