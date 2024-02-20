@@ -8,8 +8,8 @@ const programId = new web3.PublicKey( // Bridge program id from the deployment
   "H2Vh11em6b2aWaVFghChdh1nC8A2zxDiZn9QPtHBir49"
 )
 const dexPool = new web3.PublicKey('2QdhepnKRTLjjSqPL1PtKNwqrUkoLee5Gqs8bvZhRdMv')
-const dexPoolUsdcATA = new web3.PublicKey('4d35yC7C8zhCDec7JbPptL9SEb4NUddKHxURgmvD8hfo')
-const dexPoolWsolATA = new web3.PublicKey('E2BcoCeJLTa27mAXDA4xwEq3pBUcyH6XXEHYk4KvKYTv')
+const mintIn = new web3.PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v')
+const mintOut = new web3.PublicKey('So11111111111111111111111111111111111111112')
 
 const wallet = new anchor.Wallet(
   web3.Keypair.fromSecretKey(Uint8Array.from(PrivateKey))
@@ -30,8 +30,8 @@ const setDex = async () => {
     .accounts({
       authority: wallet.publicKey,
       bridgeInfo,
-      dexInTokenMint: dexPoolUsdcATA,
-      dexOutTokenMint: dexPoolWsolATA,
+      dexInTokenMint: mintIn,
+      dexOutTokenMint: mintOut,
       dexPool: dexPool
     })
     .signers([wallet.payer])
