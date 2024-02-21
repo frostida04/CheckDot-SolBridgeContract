@@ -3,7 +3,7 @@ import * as web3 from "@solana/web3.js"
 import * as splToken from "@solana/spl-token"
 
 import idl from "../target/idl/solana_cdt_bridge.json"
-import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
+import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json"
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
   "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
@@ -34,6 +34,10 @@ const initTransfer = async () => {
     ],
     program.programId
   )
+  const [vaultsNative] = await anchor.web3.PublicKey.findProgramAddress(
+    [anchor.utils.bytes.utf8.encode("bridge_native_vaults")],
+    program.programId
+  )
   const [bridgeTransfer] = await anchor.web3.PublicKey.findProgramAddress(
     [
       anchor.utils.bytes.utf8.encode("bridge_transfer"),
@@ -53,7 +57,11 @@ const initTransfer = async () => {
   )
 
   const tx = await program.methods
-    .initTransfer(new anchor.BN(100_000_000), "BSC", "0x961a14bEaBd590229B1c68A21d7068c8233C8542")
+    .initTransfer(
+      new anchor.BN(100_000_000),
+      "BSC",
+      "0x961a14bEaBd590229B1c68A21d7068c8233C8542"
+    )
     .accounts({
       authority: wallet.publicKey,
       bridgeInfo,
@@ -62,6 +70,7 @@ const initTransfer = async () => {
       senderToken: walletATA,
       systemProgram: web3.SystemProgram.programId,
       tokenProgram: splToken.TOKEN_PROGRAM_ID,
+      nativeVaults: vaultsNative,
       tokenVaults: vaultsToken,
       bridgeTransfer,
     })
@@ -71,7 +80,6 @@ const initTransfer = async () => {
   console.log(tx)
 }
 
-
-(async () => {
+;(async () => {
   await initTransfer()
 })()
