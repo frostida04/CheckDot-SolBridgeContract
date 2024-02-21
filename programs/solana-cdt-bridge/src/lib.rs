@@ -640,6 +640,10 @@ pub struct InitTransfer<'info> {
     pub sender_token: Account<'info, TokenAccount>,
     #[account(mut, seeds = [b"bridge_token_vaults", bridge_info.token.as_ref()], bump = bridge_info.token_vaults_bump)]
     pub token_vaults: Account<'info, TokenAccount>,
+    
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut, seeds = [b"bridge_native_vaults"], bump=bridge_info.native_vaults_bump)]
+    pub native_vaults: AccountInfo<'info>,
 
     #[account(mut, token::mint = bridge_info.dex_in, token::authority = bridge_info.dex_pool)]
     pub pool_in_token: Account<'info, TokenAccount>,
