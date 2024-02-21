@@ -6,7 +6,7 @@ import idl from "../target/idl/solana_cdt_bridge.json"
 import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json"
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "H2Vh11em6b2aWaVFghChdh1nC8A2zxDiZn9QPtHBir49"
+  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
 )
 const cdtToken = new web3.PublicKey( // CDT token mint address
   "Ak3ovnWQnAxPSFoSNCoNYJLnJtQDCKRBH4HwhWkb6hFm"
@@ -45,8 +45,9 @@ const initTransfer = async () => {
     ],
     program.programId
   )
-  const walletATA = new web3.PublicKey(
-    "BqTKYphVyc4YbW5qLfpP48vJDnz1aFEhhnuh3U6UaSkh"
+  const walletATA = await splToken.getAssociatedTokenAddress(
+    cdtToken,
+    wallet.publicKey
   )
   const dexPoolUsdcATA = new web3.PublicKey(
     "4d35yC7C8zhCDec7JbPptL9SEb4NUddKHxURgmvD8hfo"
@@ -55,7 +56,7 @@ const initTransfer = async () => {
     "E2BcoCeJLTa27mAXDA4xwEq3pBUcyH6XXEHYk4KvKYTv"
   )
 
-  const tx = await program.methods
+  const ins = await program.methods
     .initTransfer(
       new anchor.BN(100_000_000),
       "BSC",
@@ -74,8 +75,9 @@ const initTransfer = async () => {
       bridgeTransfer,
     })
     .signers([wallet.payer])
-    .rpc()
+    .instruction()
 
+  const tx = new web3.Transaction().add(ins)
   console.log(tx)
 }
 
