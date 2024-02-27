@@ -6,7 +6,7 @@ import idl from "../target/idl/solana_cdt_bridge.json"
 import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json"
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
 )
 const cdtToken = new web3.PublicKey( // CDT token mint address
   "Ak3ovnWQnAxPSFoSNCoNYJLnJtQDCKRBH4HwhWkb6hFm"
@@ -16,9 +16,7 @@ const wallet = new anchor.Wallet(
   web3.Keypair.fromSecretKey(Uint8Array.from(PrivateKey))
 )
 // console.log(web3.clusterApiUrl("mainnet-beta"));
-const connection = new web3.Connection(
-  "https://solana-mainnet.core.chainstack.com/90b1a03e7d63d7dafdefe698039b7056"
-)
+const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"))
 const provider = new anchor.AnchorProvider(connection, wallet, {})
 const program = new anchor.Program(idl as anchor.Idl, programId, provider)
 
@@ -43,6 +41,13 @@ const addTransfersFrom = async () => {
   const newAccount1 = new web3.PublicKey(
     "6wgoAymdY5XeueNTkHgE18XyaZxQJGuxRSdP5JgmgN1p"
   ) //.Keypair.generate();
+
+  const data = await connection.getAccountInfo(newAccount1)
+
+  if (data === null) {
+    console.log('Account not found');
+    return;
+  }
 
   // const newAccount2 = web3.Keypair.generate();
   // await program.provider.connection.confirmTransaction(

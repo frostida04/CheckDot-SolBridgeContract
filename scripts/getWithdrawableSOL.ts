@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor"
 import * as web3 from "@solana/web3.js"
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
 )
 const cdtToken = new web3.PublicKey( // CDT token mint address
   "Ak3ovnWQnAxPSFoSNCoNYJLnJtQDCKRBH4HwhWkb6hFm"

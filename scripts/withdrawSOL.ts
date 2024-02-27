@@ -5,7 +5,7 @@ import idl from "../target/idl/solana_cdt_bridge.json";
 import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
 );
 
 const wallet = new anchor.Wallet(
@@ -25,19 +25,19 @@ const withdrawSOL = async () => {
     [anchor.utils.bytes.utf8.encode("bridge_native_vaults")],
     program.programId
   );
-  // const tx = await program.methods
-  //   .withdrawSol(new anchor.BN(1e9).div(new anchor.BN(10)))
-  //   .accounts({
-  //     authority: wallet.publicKey,
-  //     bridgeInfo,
-  //     nativeVaults: vaultsNative,
-  //     systemProgram: web3.SystemProgram.programId,
-  //     receiver: wallet.publicKey,
-  //   })
-  //   .signers([wallet.payer])
-  //   .rpc();
+  const tx = await program.methods
+    .withdrawSol(new anchor.BN(92026460))
+    .accounts({
+      authority: wallet.publicKey,
+      bridgeInfo,
+      nativeVaults: vaultsNative,
+      systemProgram: web3.SystemProgram.programId,
+      receiver: wallet.publicKey,
+    })
+    .signers([wallet.payer])
+    .rpc();
 
-  console.log(vaultsNative);
+  console.log(tx);
 };
 
 (async () => {

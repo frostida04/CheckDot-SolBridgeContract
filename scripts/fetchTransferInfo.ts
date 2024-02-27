@@ -17,7 +17,7 @@ const TransferInfoLayout = borsh.struct([
 ])
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
 )
 
 const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"))

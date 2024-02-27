@@ -6,17 +6,17 @@ import idl from "../target/idl/solana_cdt_bridge.json";
 import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json";
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+  "4vLd1tBzYDkY8ggKVKRwaLFUDg1gTknGDb8EUSPzseNf"
 );
 const cdtToken = new web3.PublicKey( // CDT token mint address
-  "AV4S1dHHdvdt9GZpDzfwjhfgpY79J3w3kPrTWNvFQEuj"
+  "Ak3ovnWQnAxPSFoSNCoNYJLnJtQDCKRBH4HwhWkb6hFm"
 );
 
 const wallet = new anchor.Wallet(
   web3.Keypair.fromSecretKey(Uint8Array.from(PrivateKey))
 );
 
-const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
+const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"));
 const provider = new anchor.AnchorProvider(connection, wallet, {});
 const program = new anchor.Program(idl as anchor.Idl, programId, provider);
 
@@ -37,7 +37,7 @@ const withdrawCDT = async () => {
     wallet.publicKey
   );
   const tx = await program.methods
-    .withdraw(new anchor.BN(2000))
+    .withdraw(new anchor.BN(1_000_000_000))
     .accounts({
       authority: wallet.publicKey,
       bridgeInfo,
@@ -50,3 +50,7 @@ const withdrawCDT = async () => {
 
   console.log(tx);
 };
+
+(async () => {
+  await withdrawCDT();
+})();
