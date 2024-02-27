@@ -17,6 +17,7 @@ export const getWithdrawableSOL = async () => {
     [anchor.utils.bytes.utf8.encode("bridge_native_vaults")],
     programId
   )
+  console.log(vaultsNative)
 
   const data = await connection.getBalance(vaultsNative)
   return data
