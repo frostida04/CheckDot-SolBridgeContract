@@ -5,7 +5,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 // This is your program's public key and it will update
 // automatically when you build the project.
-declare_id!("399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X");
+declare_id!("23nt3EMPRejiV1vXhysPhtbzdFkfLTLofLrRsf2pcU4E");
 
 fn get_hash(timestamp: i64, nonce: u64, sender: Pubkey) -> Result<solana_program::keccak::Hash> {
     let serialized = (timestamp, nonce, sender).try_to_vec()?;
@@ -30,26 +30,12 @@ mod solana_cdt_bridge {
         let bridge_info = &mut ctx.accounts.bridge_info;
         let bridge_info_bump = ctx.bumps.bridge_info;
         let token_vaults_bump = ctx.bumps.token_vaults;
-        let native_vaults_bump = ctx.bumps.native_vaults;
-
-        create_account(
-            CpiContext::new_with_signer(
-                ctx.accounts.system_program.to_account_info(),
-                CreateAccount {
-                    from: ctx.accounts.authority.to_account_info(),
-                    to: ctx.accounts.native_vaults.to_account_info(),
-                },
-                &[&[b"bridge_native_vaults", &[native_vaults_bump]]],
-            ),
-            Rent::get()?.minimum_balance(8),
-            8 as u64,
-            ctx.program_id,
-        )?;
 
         bridge_info.token = ctx.accounts.token_mint.key();
         bridge_info.chain = chain;
         bridge_info.owner = *ctx.accounts.authority.key;
         bridge_info.program = *ctx.accounts.authority.key;
+        bridge_info.sol_fee_recipient = *ctx.accounts.authority.key;
         bridge_info.fees_in_dollar = fees_in_dollar;
         bridge_info.fees_in_cdt_percentage = fees_in_cdt_percentage;
         bridge_info.minimum_transfer_quantity = 0;
@@ -64,7 +50,6 @@ mod solana_cdt_bridge {
         bridge_info.paused = false;
         bridge_info.bump = bridge_info_bump;
         bridge_info.token_vaults_bump = token_vaults_bump;
-        bridge_info.native_vaults_bump = native_vaults_bump;
 
         Ok(())
     }
@@ -139,6 +124,14 @@ mod solana_cdt_bridge {
         Ok(())
     }
 
+    pub fn change_sol_fee_recipient(ctx: Context<ChangeSolFeeRecipient>) -> Result<()> {
+        if ctx.accounts.authority.key() != ctx.accounts.bridge_info.owner {
+            return err!(BridgeError::NotOwner);
+        }
+        ctx.accounts.bridge_info.sol_fee_recipient = *ctx.accounts.sol_fee_recipient.key;
+        Ok(())
+    }
+
     pub fn set_dex(ctx: Context<SetDex>) -> Result<()> {
         if ctx.accounts.authority.key() != ctx.accounts.bridge_info.owner {
             return err!(BridgeError::NotOwner);
@@ -200,42 +193,6 @@ mod solana_cdt_bridge {
             ),
             quantity,
         )?;
-
-        Ok(())
-    }
-
-    pub fn deposit_sol(ctx: Context<DepositSOL>, quantity: u64) -> Result<()> {
-        if ctx.accounts.authority.key() != ctx.accounts.bridge_info.owner {
-            return err!(BridgeError::NotOwner);
-        }
-        if ctx.accounts.authority.to_account_info().lamports() < quantity {
-            return err!(BridgeError::InsufficientBalance);
-        }
-
-        system_program::transfer(
-            CpiContext::new(
-                ctx.accounts.system_program.to_account_info(),
-                system_program::Transfer {
-                    from: ctx.accounts.authority.to_account_info(),
-                    to: ctx.accounts.native_vaults.to_account_info(),
-                },
-            ),
-            quantity,
-        )?;
-
-        Ok(())
-    }
-
-    pub fn withdraw_sol(ctx: Context<WithdrawSOL>, quantity: u64) -> Result<()> {
-        if ctx.accounts.authority.key() != ctx.accounts.bridge_info.owner {
-            return err!(BridgeError::NotOwner);
-        }
-        if ctx.accounts.native_vaults.to_account_info().lamports() < quantity {
-            return err!(BridgeError::InsufficientBalance);
-        }
-
-        ctx.accounts.native_vaults.sub_lamports(quantity)?;
-        ctx.accounts.receiver.add_lamports(quantity)?;
 
         Ok(())
     }
@@ -326,7 +283,7 @@ mod solana_cdt_bridge {
                 ctx.accounts.system_program.to_account_info(),
                 system_program::Transfer {
                     from: ctx.accounts.authority.to_account_info(),
-                    to: ctx.accounts.native_vaults.to_account_info(),
+                    to: ctx.accounts.sol_fee_recipient.to_account_info(),
                 },
             ),
             transfer_sol_fees,
@@ -338,8 +295,7 @@ mod solana_cdt_bridge {
             Clock::get()?.unix_timestamp,
             0,
             ctx.accounts.authority.key(),
-        )?
-        .to_string();
+        )?.to_string();
 
         let (_transfer_pda, bump) = Pubkey::find_program_address(
             &[
@@ -463,10 +419,6 @@ pub struct Initialize<'info> {
     #[account(init, payer = authority, seeds = [b"bridge_token_vaults", token_mint.key().as_ref()], bump, token::mint = token_mint, token::authority = token_vaults)]
     pub token_vaults: Account<'info, TokenAccount>,
 
-    /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut, seeds = [b"bridge_native_vaults"], bump)]
-    pub native_vaults: SystemAccount<'info>,
-
     #[account(mut)]
     pub dex_in_token_mint: Account<'info, Mint>,
     #[account(mut)]
@@ -507,6 +459,18 @@ pub struct ChangeProgram<'info> {
 
     /// CHECK: This is not dangerous because we don't read or write from this account
     pub program: AccountInfo<'info>,
+
+    #[account(mut)]
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct ChangeSolFeeRecipient<'info> {
+    #[account(mut, seeds=[b"bridge_info"], bump=bridge_info.bump)]
+    pub bridge_info: Account<'info, BridgeInfo>,
+
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    pub sol_fee_recipient: AccountInfo<'info>,
 
     #[account(mut)]
     pub authority: Signer<'info>,
@@ -560,38 +524,6 @@ pub struct Deposit<'info> {
 }
 
 #[derive(Accounts)]
-pub struct DepositSOL<'info> {
-    #[account(mut, seeds=[b"bridge_info"], bump=bridge_info.bump)]
-    pub bridge_info: Account<'info, BridgeInfo>,
-
-    /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut, seeds = [b"bridge_native_vaults"], bump=bridge_info.native_vaults_bump)]
-    pub native_vaults: AccountInfo<'info>,
-
-    #[account(mut)]
-    pub authority: Signer<'info>,
-    pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
-pub struct WithdrawSOL<'info> {
-    #[account(mut, seeds=[b"bridge_info"], bump=bridge_info.bump)]
-    pub bridge_info: Account<'info, BridgeInfo>,
-
-    /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut)]
-    pub receiver: AccountInfo<'info>,
-
-    /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut, seeds = [b"bridge_native_vaults"], bump=bridge_info.native_vaults_bump)]
-    pub native_vaults: AccountInfo<'info>,
-
-    #[account(mut)]
-    pub authority: Signer<'info>,
-    pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
 pub struct Withdraw<'info> {
     #[account(mut, seeds=[b"bridge_info"], bump=bridge_info.bump)]
     pub bridge_info: Account<'info, BridgeInfo>,
@@ -640,10 +572,10 @@ pub struct InitTransfer<'info> {
     pub sender_token: Account<'info, TokenAccount>,
     #[account(mut, seeds = [b"bridge_token_vaults", bridge_info.token.as_ref()], bump = bridge_info.token_vaults_bump)]
     pub token_vaults: Account<'info, TokenAccount>,
-    
+
     /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut, seeds = [b"bridge_native_vaults"], bump=bridge_info.native_vaults_bump)]
-    pub native_vaults: AccountInfo<'info>,
+    #[account(mut, address = bridge_info.sol_fee_recipient)]
+    pub sol_fee_recipient: AccountInfo<'info>,
 
     #[account(mut, token::mint = bridge_info.dex_in, token::authority = bridge_info.dex_pool)]
     pub pool_in_token: Account<'info, TokenAccount>,
@@ -663,6 +595,7 @@ pub struct BridgeInfo {
     pub token: Pubkey,
     pub owner: Pubkey,
     pub program: Pubkey,
+    pub sol_fee_recipient: Pubkey,
     pub chain: String,
 
     pub fees_in_dollar: u64,
@@ -682,7 +615,6 @@ pub struct BridgeInfo {
     pub paused: bool,
     bump: u8,
     token_vaults_bump: u8,
-    native_vaults_bump: u8,
 }
 
 #[account]

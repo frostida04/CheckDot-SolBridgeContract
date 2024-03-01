@@ -16,6 +16,8 @@ const wallet = new anchor.Wallet(
   web3.Keypair.fromSecretKey(Uint8Array.from(PrivateKey))
 )
 
+const solFeeRecipient = new web3.PublicKey("")
+
 const connection = new web3.Connection(web3.clusterApiUrl("mainnet-beta"))
 const provider = new anchor.AnchorProvider(connection, wallet, {})
 const program = new anchor.Program(idl as anchor.Idl, programId, provider)
@@ -32,10 +34,6 @@ const initTransfer = async () => {
       anchor.utils.bytes.utf8.encode("bridge_token_vaults"),
       cdtToken.toBuffer(),
     ],
-    program.programId
-  )
-  const [vaultsNative] = await anchor.web3.PublicKey.findProgramAddress(
-    [anchor.utils.bytes.utf8.encode("bridge_native_vaults")],
     program.programId
   )
   const [bridgeTransfer] = await anchor.web3.PublicKey.findProgramAddress(
@@ -70,7 +68,7 @@ const initTransfer = async () => {
       senderToken: walletATA,
       systemProgram: web3.SystemProgram.programId,
       tokenProgram: splToken.TOKEN_PROGRAM_ID,
-      nativeVaults: vaultsNative,
+      solFeeRecipient,
       tokenVaults: vaultsToken,
       bridgeTransfer,
     })

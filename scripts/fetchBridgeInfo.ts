@@ -6,6 +6,7 @@ const BridgeInfoLayout = borsh.struct([
   borsh.publicKey("token"),
   borsh.publicKey("owner"),
   borsh.publicKey("program"),
+  borsh.publicKey("sol_fee_recipient"),
   borsh.str("chain"),
   borsh.u64("fees_in_dollar"),
   borsh.u64("fees_in_cdt_percentage"),
@@ -22,10 +23,10 @@ const BridgeInfoLayout = borsh.struct([
 ])
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
+  "3Yq6HbjiQSiTAm3SsB3SovJrtPFF2n52noaBydgs6BDH"
 )
 
-const connection = new web3.Connection('https://solana-mainnet.core.chainstack.com/90b1a03e7d63d7dafdefe698039b7056')
+const connection = new web3.Connection(web3.clusterApiUrl('devnet'))
 
 export const fetchBridgeInfo = async () => {
   const [bridgeInfo] = await web3.PublicKey.findProgramAddressSync(
