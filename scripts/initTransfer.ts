@@ -6,7 +6,7 @@ import idl from "../target/idl/solana_cdt_bridge.json"
 import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json"
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
 )
 const cdtToken = new web3.PublicKey( // CDT token mint address
   "Ak3ovnWQnAxPSFoSNCoNYJLnJtQDCKRBH4HwhWkb6hFm"
@@ -72,8 +72,7 @@ const initTransfer = async () => {
       tokenVaults: vaultsToken,
       bridgeTransfer,
     })
-    .signers([wallet.payer])
-    .rpc()
+    .signers([wallet.payer]).rpc();
 
   console.log(tx)
 }

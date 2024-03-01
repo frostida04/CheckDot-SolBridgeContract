@@ -6,8 +6,8 @@ import idl from "../target/idl/solana_cdt_bridge.json"
 import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json"
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "399S45kbptL4XmAc8fzwPRQ6yjGgkGcX9iYtZgrUNb1X"
-)
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
+);
 const dexPool = new web3.PublicKey( // USDC / WSOL pair address
   "2QdhepnKRTLjjSqPL1PtKNwqrUkoLee5Gqs8bvZhRdMv"
 )
@@ -42,7 +42,7 @@ const initialize = async () => {
     program.programId
   )
   const tx = await program.methods
-    .initialize("SOL", new anchor.BN(10_000_000_000), new anchor.BN(0))
+    .initialize("SOL", new anchor.BN(1_000_000_000), new anchor.BN(0))
     .accounts({
       bridgeInfo,
       authority: wallet.publicKey,

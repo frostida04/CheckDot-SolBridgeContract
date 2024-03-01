@@ -23,7 +23,7 @@ const BridgeInfoLayout = borsh.struct([
 ])
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "3Yq6HbjiQSiTAm3SsB3SovJrtPFF2n52noaBydgs6BDH"
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
 )
 
 const connection = new web3.Connection(web3.clusterApiUrl('devnet'))
@@ -34,6 +34,9 @@ export const fetchBridgeInfo = async () => {
     new web3.PublicKey(programId)
   )
   const data = await connection.getAccountInfo(bridgeInfo)
+  if (data === null) {
+    return null;
+  }
   const decoded = BridgeInfoLayout.decode(data.data.slice(8))
   return decoded
 }

@@ -5,7 +5,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 // This is your program's public key and it will update
 // automatically when you build the project.
-declare_id!("23nt3EMPRejiV1vXhysPhtbzdFkfLTLofLrRsf2pcU4E");
+declare_id!("5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5");
 
 fn get_hash(timestamp: i64, nonce: u64, sender: Pubkey) -> Result<solana_program::keccak::Hash> {
     let serialized = (timestamp, nonce, sender).try_to_vec()?;

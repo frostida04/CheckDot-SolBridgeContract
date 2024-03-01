@@ -5,7 +5,7 @@ import idl from "../target/idl/solana_cdt_bridge.json"
 import PrivateKey from "/Users/jeremyguyet/.config/solana/id.json"
 
 const programId = new web3.PublicKey( // Bridge program id from the deployment
-  "HoddZCKmLKWcs91npavV5uwQb829rHGVRKdToYqu96W7"
+  "5PhA4GUPKdMzY1CArmppCNcMBvDE2DiLkFQbrseqzKX5"
 )
 
 const wallet = new anchor.Wallet(
@@ -23,7 +23,7 @@ const setFeesInDollar = async () => {
   )
 
   const tx = await program.methods
-    .setFeesInDollar(new anchor.BN(20000))
+    .setFeesInDollar(new anchor.BN(200_000_000_000))
     .accounts({
       authority: wallet.publicKey,
       bridgeInfo,
